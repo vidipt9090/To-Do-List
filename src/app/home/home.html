@@ -1,1 +1,15 @@
-<p>home works!</p>
+
+<div class="main" (click)="closeBox()"></div>
+  <div class="box">
+    <h2>New Note</h2>
+    <input
+    type="text"
+    placeholder="Enter note..."
+    [value]="newText"
+    (input)="newText = $any($event.target).value"  />
+    <div class="button">
+      <button class="cancel" (click)="closeBox()">Cancel</button>
+      <button class="add" (click)="addTodo()">Add</button>
+    </div>
+  </div>
+

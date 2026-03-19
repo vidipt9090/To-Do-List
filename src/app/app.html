@@ -1,7 +1,77 @@
- <div>
- <h2> TODO List </h2>
- <input class="search" placeholder="Search note...">
- <button class="all">All</button>
- <button class="darkmode">Dark Mode </button>
- <button class="add">+</button>
- </div>
+
+<div>
+
+  <div [class.dark] = "isDarkMode">
+  <div class="header">
+    <h2> TODO List </h2>
+  </div>
+  <br>
+
+  <div class="controls">
+   <!-- Search Box -->
+    <div class="search-box">
+      <input
+       [value] = "searchText()"
+       (input)="searchText.set($event.target.value)"
+       type="text"
+       placeholder="Search note..." />
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <!-- Dropdown -->
+    <select class="filter " (change)="filterMode.set($any($event.target).value)">
+      <option>ALL</option>
+      <option>Completed</option>
+      <option>Pending</option>
+    </select>
+
+    <!-- Dark Mode Button -->
+    <button class="darkmode"  (click) = "toggleDarkMode()">🌙</button>
+
+  </div>
+
+   <ul>
+   @for(todo of filteredTodos(); track $index){
+       <li [class.done]="todo.done">
+
+      <!-- Checkbox -->
+      <div
+        class="checkbox"
+        [class.checked]="todo.done"
+        (click)="toggleTodo($index)">
+        @if(todo.done){
+          <span>✔</span>
+        }
+      </div>
+
+      <!-- Todo Text -->
+      <span
+        class="todo-text"
+        [class.strikethrough]="todo.done">
+        {{ todo.text }}
+      </span>
+        <!-- Edit & Delete Icons -->
+      <div class="actions">
+        <button class="icon-btn" (click)="editTodo($index)">✏️</button>
+        <button class="icon-btn" (click)="deletedTodo($index)">🗑️</button>
+      </div>
+
+    </li>
+    }
+
+  </ul>
+  <button class="add-btn" (click) = "openModal()">+</button>
+  @if (showModal) {
+      <div class="overlay">
+        <app-home
+          (close)="closeModal()"
+          (add)="addTodo($event)"> <!-- CHANGED: this line is new -->
+        </app-home>
+      </div>
+    }
+
+</div>
+
+
+
+</div>
