@@ -6,6 +6,11 @@
     <h2> TODO List </h2>
   </div>
   <br>
+<!-- Date Time -->
+  <div class="datetime">
+  <span class="date"> {{ currentDate() }}</span>
+  <span class="time"> {{ currentTime() }}</span>
+</div>
 
   <div class="controls">
    <!-- Search Box -->
@@ -48,6 +53,7 @@
         class="todo-text"
         [class.strikethrough]="todo.done">
         {{ todo.text }}
+        <small class="created-at">{{ todo.createdAt }}</small>
       </span>
         <!-- Edit & Delete Icons -->
       <div class="actions">

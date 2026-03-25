@@ -151,3 +151,33 @@ li:hover .actions {
   font-size: 16px;
   padding: 4px;
 }
+
+/* DateTime */
+.datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  color: #6c63ff;
+  font-weight: 600;
+}
+
+.time {
+  font-size: 22px;
+}
+
+.date {
+  font-size: 14px;
+  color: #888;
+}
+
+/*  Created At which is used in the todo to get in knowledge about when it was created  */4
+
+.created-at {
+  display: block;
+  font-size: 11px;
+  color: #aaa;
+  font-weight: 400;
+  margin-top: 2px;
+}
