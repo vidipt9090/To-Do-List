@@ -1,4 +1,4 @@
-import { Component, signal , computed} from '@angular/core';
+import { Component, signal , computed, effect} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Home } from './home/home';
 import { CommonModule } from '@angular/common';
@@ -14,7 +14,11 @@ export class App {
    // CHANGED: Removed newTodo signal (search bar should have its own separate signal)
   searchText = signal(''); // CHANGED: renamed to searchText for clarity
 
-  todos = signal<{text:string, done: boolean, createdAt: string}[]>([]);//Added created at
+  //todos = signal<{text:string, done: boolean, createdAt: string}[]>([]);//Added created at
+  // loading todos to a local storage and retrieving them on app initialization
+  todos = signal<{text:string, done: boolean, createdAt: string}[]>(
+  JSON.parse(localStorage.getItem('todos') || '[]') // ✅ loads saved todos
+  );
 
   // CHANGED: addTodo now accepts text from home component instead of reading from signal
   addTodo(text: string) {
@@ -101,6 +105,10 @@ currentTime = signal('');
 constructor() {
   this.updateDateTime();
   setInterval(() => this.updateDateTime(), 1000); // updates every second
+
+    effect(() => {
+    localStorage.setItem('todos', JSON.stringify(this.todos()));
+  });
 }
 
 updateDateTime() {
@@ -119,5 +127,7 @@ updateDateTime() {
     second: '2-digit'
   }));
 }
+
+
 }
 
