@@ -127,7 +127,8 @@ updateDateTime() {
     second: '2-digit'
   }));
 }
-
+// NO CHANGE - Pending Count
+pendingCount = computed(() => this.todos().filter(t => !t.done).length);
 
 }
 

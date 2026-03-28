@@ -3,7 +3,11 @@
 
   <div [class.dark] = "isDarkMode">
   <div class="header">
-    <h2> TODO List </h2>
+    <h2> TODO List
+      @if(pendingCount() > 0){
+      <span class="badge">{{ pendingCount() }} pending</span>
+    }
+    </h2>
   </div>
   <br>
 <!-- Date Time -->
