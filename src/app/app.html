@@ -1,4 +1,6 @@
-
+@if(!isLoggedIn){
+  <app-login></app-login>
+} @else {
 <div>
 
   <div [class.dark] = "isDarkMode">
@@ -84,3 +86,4 @@
 
 
 </div>
+}

@@ -2,19 +2,19 @@ import { Component, signal , computed, effect} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Home } from './home/home';
 import { CommonModule } from '@angular/common';
+import { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { Login } from './login/login';
 
 @Component({
   selector: 'app-root',
-  imports: [Home, CommonModule],
+  imports: [Home, CommonModule, Login],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
-
-   // CHANGED: Removed newTodo signal (search bar should have its own separate signal)
-  searchText = signal(''); // CHANGED: renamed to searchText for clarity
-
-  //todos = signal<{text:string, done: boolean, createdAt: string}[]>([]);//Added created at
+  searchText = signal('');
+  isLoggedIn = false; //for authentication state
   // loading todos to a local storage and retrieving them on app initialization
   todos = signal<{text:string, done: boolean, createdAt: string}[]>(
   JSON.parse(localStorage.getItem('todos') || '[]') // ✅ loads saved todos
@@ -35,8 +35,6 @@ export class App {
     this.todos.update(list => [...list, { text, done: false, createdAt }]);
     // CHANGED: No need to clear any signal here, home.ts handles that
   }
-
-  // NO CHANGE
   toggleTodo(index: number) {
   const actualIndex = this.todos().indexOf(this.filteredTodos()[index]); // ✅ CHANGED
   this.todos.update(list =>
@@ -45,8 +43,6 @@ export class App {
     )
   );
 }
-
-  // NO CHANGE
   deletedTodo(index: number) {
   const actualIndex = this.todos().indexOf(this.filteredTodos()[index]); // ✅ CHANGED
   this.todos.update(
@@ -65,14 +61,14 @@ editTodo(index: number) {
   }
 }
 
-  // NO CHANGE - Dark Mode
+  // Dark Mode
   isDarkMode = false;
 
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
   }
 
-  // NO CHANGE - Modal
+  //  Modal
   showModal = false;
 
   openModal() {
@@ -103,6 +99,10 @@ currentDate = signal('');
 currentTime = signal('');
 
 constructor() {
+  // Authentication state listener
+  onAuthStateChanged(auth, (user) => {
+      this.isLoggedIn = !!user;
+    });
   this.updateDateTime();
   setInterval(() => this.updateDateTime(), 1000); // updates every second
 
