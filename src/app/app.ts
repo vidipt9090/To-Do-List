@@ -2,9 +2,19 @@ import { Component, signal , computed, effect} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Home } from './home/home';
 import { CommonModule } from '@angular/common';
-import { auth } from './firebase';
+import { auth , db  } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Login } from './login/login';
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  onSnapshot,
+  doc,
+  query,
+  where
+} from 'firebase/firestore';
 
 @Component({
   selector: 'app-root',
@@ -14,50 +24,65 @@ import { Login } from './login/login';
 })
 export class App {
   searchText = signal('');
-  isLoggedIn = false; //for authentication state
+  isLoggedIn = false;//for authentication state
+  userId = ''; // ✅ ADD after isLoggedIn
   // loading todos to a local storage and retrieving them on app initialization
-  todos = signal<{text:string, done: boolean, createdAt: string}[]>(
-  JSON.parse(localStorage.getItem('todos') || '[]') // ✅ loads saved todos
-  );
+  //
+  todos = signal<{
+    id: string,
+    text: string,
+    done: boolean,
+    createdAt: string,
+    priority: string
+  }[]>([]);
 
   // CHANGED: addTodo now accepts text from home component instead of reading from signal
-  addTodo(text: string) {
-    if (text.trim() === '') return;
-    const now = new Date();
-    const createdAt = now.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }) + ' ' + now.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
+  loadTodos() {
+  const q = query(
+    collection(db, 'todos'),
+    where('userId', '==', this.userId)
+  );
+  onSnapshot(q, (snapshot) => {
+    const loaded = snapshot.docs.map(doc => ({
+      id: doc.id, ...doc.data()
+    })) as any[];
+    this.todos.set(loaded);
   });
-    this.todos.update(list => [...list, { text, done: false, createdAt }]);
-    // CHANGED: No need to clear any signal here, home.ts handles that
-  }
-  toggleTodo(index: number) {
-  const actualIndex = this.todos().indexOf(this.filteredTodos()[index]); // ✅ CHANGED
-  this.todos.update(list =>
-    list.map((item, i) =>
-      i === actualIndex ? { ...item, done: !item.done } : item
-    )
-  );
 }
-  deletedTodo(index: number) {
-  const actualIndex = this.todos().indexOf(this.filteredTodos()[index]); // ✅ CHANGED
-  this.todos.update(
-    list => list.filter((_, i) => i !== actualIndex)
-  );
+  async addTodo(data: string) {
+  const [text, priority] = data.split('||');
+  if (text.trim() === '') return;
+  const now = new Date();
+  const createdAt = now.toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  }) + ' ' + now.toLocaleTimeString('en-US', {
+    hour: '2-digit', minute: '2-digit',
+  });
+  await addDoc(collection(db, 'todos'), {
+    text: text.trim(), done: false,
+    createdAt, priority, userId: this.userId
+  });
 }
-editTodo(index: number) {
-  const actualIndex = this.todos().indexOf(this.filteredTodos()[index]); // ✅ CHANGED
-  const newText = prompt('Edit your note:', this.todos()[actualIndex].text);
+  async toggleTodo(index: number) {
+  const todo = this.filteredTodos()[index];
+  const actualTodo = this.todos().find(t => t.id === todo.id);
+  if (!actualTodo) return;
+  await updateDoc(doc(db, 'todos', actualTodo.id), {
+    done: !actualTodo.done
+  });
+}
+  async deletedTodo(index: number) {
+  const todo = this.filteredTodos()[index];
+  await deleteDoc(doc(db, 'todos', todo.id));
+}
+
+async editTodo(index: number) {
+  const todo = this.filteredTodos()[index];
+  const newText = prompt('Edit your note:', todo.text);
   if (newText && newText.trim() !== '') {
-    this.todos.update(list =>
-      list.map((item, i) =>
-        i === actualIndex ? { ...item, text: newText.trim() } : item
-      )
-    );
+    await updateDoc(doc(db, 'todos', todo.id), {
+      text: newText.trim()
+    });
   }
 }
 
@@ -101,8 +126,15 @@ currentTime = signal('');
 constructor() {
   // Authentication state listener
   onAuthStateChanged(auth, (user) => {
-      this.isLoggedIn = !!user;
-    });
+  this.isLoggedIn = !!user;
+  if (user) {
+    this.userId = user.uid;
+    this.loadTodos(); // ✅ ADD
+  } else {
+    this.userId = '';
+    this.todos.set([]); // ✅ ADD
+  }
+});
   this.updateDateTime();
   setInterval(() => this.updateDateTime(), 1000); // updates every second
 
