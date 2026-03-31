@@ -192,3 +192,8 @@ li:hover .actions {
   margin-left: 8px;
   vertical-align: middle;
 }
+@keyframes pulse {
+  0%   { transform: scale(1);    box-shadow: 0 2px 8px rgba(255,65,108,0.4); }
+  50%  { transform: scale(1.08); box-shadow: 0 4px 16px rgba(255,65,108,0.7); }
+  100% { transform: scale(1);    box-shadow: 0 2px 8px rgba(255,65,108,0.4); }
+}
