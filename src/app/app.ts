@@ -50,17 +50,26 @@ export class App {
   });
 }
   async addTodo(data: string) {
-  const [text, priority] = data.split('||');
+  // ✅ CHANGED: added fallback if priority is missing
+  const parts = data.split('||');
+  const text = parts[0];
+  const priority = parts[1] ?? 'Low'; // ✅ default to 'Low' if undefined
+
   if (text.trim() === '') return;
+
   const now = new Date();
   const createdAt = now.toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
   }) + ' ' + now.toLocaleTimeString('en-US', {
     hour: '2-digit', minute: '2-digit',
   });
-  await addDoc(collection(db, 'todos'), {
-    text: text.trim(), done: false,
-    createdAt, priority, userId: this.userId
+
+   await addDoc(collection(db, 'todos'), {
+    text: text.trim(),
+    done: false,
+    createdAt,
+    priority,  // ✅ now always has a value
+    userId: this.userId
   });
 }
   async toggleTodo(index: number) {

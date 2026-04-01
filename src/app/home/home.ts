@@ -9,6 +9,7 @@ import { Component, EventEmitter, Output, signal } from '@angular/core';
 export class Home {
 
   newText = '';
+   priority = 'Low'; // ✅ ADD THIS
 
 @Output() close = new EventEmitter<void>();
 
@@ -17,13 +18,13 @@ export class Home {
   }
 @Output() add = new EventEmitter<string>();
   addTodo() {
-    const text = this.newText.trim(); // CHANGED: using newText instead of newTodo signal
+  const text = this.newText.trim();
+  if (text === '') return;
 
-    if (text === '') return;
-
-    this.add.emit(text);  // CHANGED: now emitting text to parent (app.ts) instead of adding locally
-    this.newText = '';    // CHANGED: clearing newText instead of signal
-    this.close.emit();    // CHANGED: closes modal after adding
-  }
+  this.add.emit(`${text}||${this.priority}`); // ✅ make sure this line exists
+  this.newText = '';
+  this.priority = 'Low';
+  this.close.emit();
+}
 }
 
