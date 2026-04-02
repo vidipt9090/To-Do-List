@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { Home } from './home/home';
 import { CommonModule } from '@angular/common';
 import { auth , db  } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { Login } from './login/login';
 import {
   collection,
@@ -114,7 +114,7 @@ async editTodo(index: number) {
   }
 
   // Dropdown Logic
-  filterMode = signal<'ALL' | 'Completed' | 'Pending'>('ALL');
+  filterMode = signal<'ALL' | 'Completed' | 'Pending'>('Pending');
 
 filteredTodos = computed(() => {
   const mode = this.filterMode();
@@ -170,6 +170,11 @@ updateDateTime() {
 }
 // NO CHANGE - Pending Count
 pendingCount = computed(() => this.todos().filter(t => !t.done).length);
+
+//
+async logout(){
+  await signOut(auth);
+}
 
 }
 
