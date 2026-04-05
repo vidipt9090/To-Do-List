@@ -100,6 +100,11 @@ async editTodo(index: number) {
 
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
+    const btn = document.querySelector('.darkmode');
+    if (btn) {
+    btn.classList.add('spin');
+    setTimeout(() => btn.classList.remove('spin'), 500);
+  }
   }
 
   //  Modal
