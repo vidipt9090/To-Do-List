@@ -223,3 +223,32 @@ li:hover .actions {
   background: white;
   color: #6c63ff;
 }
+
+/* // Drag and Drop Styles */
+/* Drag handle */
+.drag-handle {
+  cursor: grab;
+  font-size: 18px;
+  color: #aaa;
+  padding: 0 8px;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Item being dragged */
+li.dragging {
+  opacity: 0.4;
+  background: #f0f0ff;
+  border: 2px dashed #6c63ff;
+}
+
+/* Drop target highlight */
+li.drag-over {
+  border-top: 3px solid #6c63ff;
+  background: #f5f3ff;
+  transform: scale(1.01);
+  transition: transform 0.1s ease;
+}

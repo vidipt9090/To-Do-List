@@ -44,8 +44,16 @@
 
    <ul>
    @for(todo of filteredTodos(); track $index){
-       <li [class.done]="todo.done">
+       <li  [class.done]="todo.done"
+  [class.dragging]="dragIndex === $index"
+  [class.drag-over]="dragOverIndex === $index"
+  draggable="true"
+  (dragstart)="onDragStart($index)"
+  (dragover)="onDragOver($event, $index)"
+  (drop)="onDrop($index)"
+  (dragend)="onDragEnd()">
 
+      <span class="drag-handle">⠿</span>
       <!-- Checkbox -->
       <div
         class="checkbox"

@@ -181,5 +181,38 @@ async logout(){
   await signOut(auth);
 }
 
+// Drag And Drop Logic
+dragIndex: number | null = null;
+dragOverIndex: number | null = null;
+
+// ✅ ADD these methods
+onDragStart(index: number) {
+  this.dragIndex = index;
+}
+
+onDragOver(event: DragEvent, index: number) {
+  event.preventDefault();
+  this.dragOverIndex = index;
+}
+
+onDrop(index: number) {
+  if (this.dragIndex === null || this.dragIndex === index) return;
+
+  this.todos.update(list => {
+    const updated = [...list];
+    const [moved] = updated.splice(this.dragIndex!, 1);
+    updated.splice(index, 0, moved);
+    return updated;
+  });
+
+  this.dragIndex = null;
+  this.dragOverIndex = null;
+}
+
+onDragEnd() {
+  this.dragIndex = null;
+  this.dragOverIndex = null;
+}
+
 }
 
