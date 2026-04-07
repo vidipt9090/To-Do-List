@@ -72,13 +72,20 @@ export class App {
     userId: this.userId
   });
 }
-  async toggleTodo(index: number) {
-  const todo = this.filteredTodos()[index];
-  const actualTodo = this.todos().find(t => t.id === todo.id);
-  if (!actualTodo) return;
-  await updateDoc(doc(db, 'todos', actualTodo.id), {
-    done: !actualTodo.done
-  });
+ toggleTodo(index: number) {
+  const actualIndex = this.todos().indexOf(this.filteredTodos()[index]);
+  const isDone = this.todos()[actualIndex].done;
+
+  // ✅ ADD: play sound only when marking as COMPLETE
+  if (!isDone) {
+    this.playCompleteSound();
+  }
+
+  this.todos.update(list =>
+    list.map((item, i) =>
+      i === actualIndex ? { ...item, done: !item.done } : item
+    )
+  );
 }
   async deletedTodo(index: number) {
   const todo = this.filteredTodos()[index];
@@ -212,6 +219,30 @@ onDrop(index: number) {
 onDragEnd() {
   this.dragIndex = null;
   this.dragOverIndex = null;
+}
+
+// Sound Effect
+
+// ✅ ADD this method
+playCompleteSound() {
+  const context = new AudioContext();
+  const oscillator = context.createOscillator();
+  const gainNode = context.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(context.destination);
+
+  // 🎵 Pleasant "ding" sound
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(600, context.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(900, context.currentTime + 0.1);
+  oscillator.frequency.exponentialRampToValueAtTime(600, context.currentTime + 0.3);
+
+  gainNode.gain.setValueAtTime(0.3, context.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.5);
+
+  oscillator.start(context.currentTime);
+  oscillator.stop(context.currentTime + 0.5);
 }
 
 }
