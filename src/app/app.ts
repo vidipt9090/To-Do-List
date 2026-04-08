@@ -244,6 +244,13 @@ playCompleteSound() {
   oscillator.start(context.currentTime);
   oscillator.stop(context.currentTime + 0.5);
 }
+// ✅ ADD this computed
+completionPercent = computed(() => {
+  const total = this.todos().length;
+  if (total === 0) return 0;
+  const done = this.todos().filter(t => t.done).length;
+  return Math.round((done / total) * 100);
+});
 
 }
 
