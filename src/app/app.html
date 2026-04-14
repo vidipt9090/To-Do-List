@@ -93,7 +93,30 @@
 
 </div>
 
-<h2>Hello How Are You </h2>
+<!-- ✅ ADD this block -->
+@if(todos().length > 0) {
+  <div class="progress-container">
 
-</div>
+    <div class="progress-labels">
+      <span>Progress</span>
+      <span>{{ completionPercent() }}%</span>
+    </div>
+
+    <div class="progress-bar-bg">
+      <div
+        class="progress-bar-fill"
+        [style.width.%]="completionPercent()"
+        [class.complete]="completionPercent() === 100">
+      </div>
+    </div>
+
+    <div class="progress-summary">
+      {{ todos().filter(t => t.done).length }} of {{ todos().length }} tasks completed
+      @if(completionPercent() === 100) {
+        <span class="congrats">🎉 All done!</span>
+      }
+    </div>
+
+  </div>
+}
 }
