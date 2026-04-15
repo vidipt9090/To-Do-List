@@ -117,6 +117,18 @@
       }
     </div>
 
+    <div *ngFor="let todo of todos" class="todo-item">
+
+  <span [style.fontWeight]="todo.pinned ? 'bold' : 'normal'">
+    {{ todo.title }}
+  </span>
+
+  <button (click)="togglePin(todo)">
+    {{ todo.pinned ? 'Unpin' : 'Pin' }}
+  </button>
+
+</div>
+
   </div>
 }
 }

@@ -33,7 +33,8 @@ export class App {
     text: string,
     done: boolean,
     createdAt: string,
-    priority: string
+    priority: string,
+    pinned: boolean
   }[]>([]);
 
   // CHANGED: addTodo now accepts text from home component instead of reading from signal
@@ -252,5 +253,22 @@ completionPercent = computed(() => {
   return Math.round((done / total) * 100);
 });
 
+ // 🔁 Toggle Pin
+  togglePin(todos: any ) {
+    todos.pinned = !todos.pinned;
+    this.sortTodos();
+  }
+
+  // 🔼 Keep pinned on top
+  sortTodos() {
+    this.todos.sort((a, b) => Number(b.pinned) - Number(a.pinned));
+  }
+
+  // Run once on load
+  ngOnInit() {
+    this.sortTodos();
+  }
 }
+
+
 
